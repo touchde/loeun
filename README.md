@@ -22,6 +22,8 @@
 
 ## Why Loeun?
 
+Looking for an IDM alternative on macOS or Linux, or a free and open-source one on Windows? Loeun is built for that.
+
 | | Loeun | Browser built-in |
 |---|:-:|:-:|
 | Multi-connection acceleration | Yes | No |
