@@ -37,7 +37,7 @@ Goal: every part of the monorepo exists, builds and is tested in CI, even if it 
 | M0-08 | GitHub setup: labels, milestones, branch protection, issues from this backlog | S | — | — |
 
 **M0-01 Cargo workspace + `loeun-core` stub**
-- Root `Cargo.toml` with `[workspace]`, `resolver = "2"`, shared `[workspace.package]` (version, edition 2021, license, repository, `rust-version`) and `[workspace.lints]` (deny `unsafe_code` by default, warn `clippy::pedantic` selectively).
+- Root `Cargo.toml` with `[workspace]`, `resolver = "3"`, shared `[workspace.package]` (version, edition 2024, license, repository, `rust-version` = 1.96) and `[workspace.lints]` (deny `unsafe_code` by default, warn `clippy::pedantic` selectively).
 - `crates/loeun-core` with `lib.rs` exposing `pub fn version() -> &'static str` and one unit test.
 - Commit `Cargo.lock`.
 - *Done when:* `cargo build`, `cargo nextest run`, `cargo clippy`, `cargo deny check` pass locally and the CI rust jobs run (not skip) green on all three OSes.
