@@ -5,3 +5,8 @@ extend-exclude = ["LICENSE-*", "*.lock", "pnpm-lock.yaml"]
 # Project name and Khmer transliterations
 loeun = "loeun"
 Loeun = "Loeun"
+
+[default.extend-identifiers]
+# Plural acronyms that typos splits on case ("PNGs" -> "PN" + "Gs").
+PNGs = "PNGs"
+SVGs = "SVGs"
