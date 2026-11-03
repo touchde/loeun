@@ -1,0 +1,158 @@
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)build, e.g. v0.1.0"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+  TAG: ${{ inputs.tag || github.ref_name }}
+
+jobs:
+  create-release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TAG }}
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        env:
+          OUTPUT: RELEASE_NOTES.md
+      - name: Create draft release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          [[ "$TAG" == *-* ]] && prerelease="--prerelease"
+          gh release create "$TAG" --draft $prerelease \
+            --title "Loeun $TAG" --notes-file RELEASE_NOTES.md --verify-tag
+          id=$(gh api "repos/${{ github.repository }}/releases" --jq ".[] | select(.tag_name==\"$TAG\") | .id")
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+  desktop:
+    name: Desktop (${{ matrix.name }})
+    needs: create-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: macos-arm64,   os: macos-latest,      target: aarch64-apple-darwin }
+          - { name: macos-x64,     os: macos-latest,      target: x86_64-apple-darwin }
+          - { name: linux-x64,     os: ubuntu-22.04,      target: x86_64-unknown-linux-gnu }
+          - { name: linux-arm64,   os: ubuntu-22.04-arm,  target: aarch64-unknown-linux-gnu }
+          - { name: windows-x64,   os: windows-latest,    target: x86_64-pc-windows-msvc }
+          - { name: windows-arm64, os: windows-latest,    target: aarch64-pc-windows-msvc, bundles: nsis }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - name: Install Linux deps (Tauri)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.target }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Updater signing (required once the updater is enabled)
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # macOS signing & notarization (optional until M5; build is unsigned if empty)
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          projectPath: apps/desktop
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: --target ${{ matrix.target }} ${{ matrix.bundles && format('--bundles {0}', matrix.bundles) || '' }}
+          includeUpdaterJson: true
+
+  cli:
+    name: CLI (${{ matrix.target }})
+    needs: create-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-latest,     target: aarch64-apple-darwin }
+          - { os: macos-latest,     target: x86_64-apple-darwin }
+          - { os: ubuntu-22.04,     target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-22.04-arm, target: aarch64-unknown-linux-gnu }
+          - { os: windows-latest,   target: x86_64-pc-windows-msvc }
+          - { os: windows-latest,   target: aarch64-pc-windows-msvc }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: cli-${{ matrix.target }}
+      - name: Build
+        run: cargo build --release --locked --target ${{ matrix.target }} -p loeun-cli
+      - name: Package & upload
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name="loeun-${TAG}-${{ matrix.target }}"
+          mkdir "$name"
+          bin="target/${{ matrix.target }}/release/loeun"
+          [[ "${{ runner.os }}" == "Windows" ]] && bin="$bin.exe"
+          cp "$bin" README.md LICENSE-MIT LICENSE-APACHE "$name/"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            7z a "$name.zip" "$name" >/dev/null; asset="$name.zip"
+          else
+            tar czf "$name.tar.gz" "$name"; asset="$name.tar.gz"
+          fi
+          gh release upload "$TAG" "$asset" --clobber
+
+  checksums:
+    name: Checksums
+    needs: [create-release, desktop, cli]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate SHA256SUMS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir assets && cd assets
+          gh release download "$TAG" -R "${{ github.repository }}"
+          sha256sum * > SHA256SUMS
+          gh release upload "$TAG" SHA256SUMS -R "${{ github.repository }}" --clobber

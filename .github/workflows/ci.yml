@@ -1,0 +1,173 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: short
+
+jobs:
+  # Detects which parts of the monorepo exist yet, so CI stays green while the
+  # workspace is scaffolded incrementally.
+  detect:
+    name: Detect workspace
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.check.outputs.rust }}
+      node: ${{ steps.check.outputs.node }}
+      desktop: ${{ steps.check.outputs.desktop }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          echo "rust=$([ -f Cargo.toml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "node=$([ -f pnpm-lock.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "desktop=$([ -f apps/desktop/src-tauri/tauri.conf.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  typos:
+    name: Spell check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crate-ci/typos@v1
+
+  rust-lint:
+    name: Rust lint
+    needs: detect
+    if: needs.detect.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux deps (Tauri)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+      - run: cargo doc --workspace --no-deps --locked
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  rust-test:
+    name: Rust test (${{ matrix.os }})
+    needs: detect
+    if: needs.detect.outputs.rust == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux deps (Tauri)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.os }}
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+      - run: cargo nextest run --workspace --all-features --locked --no-tests=pass
+      - run: cargo test --workspace --doc --locked
+
+  rust-msrv:
+    name: Rust MSRV
+    needs: detect
+    if: needs.detect.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux deps (Tauri)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      # Uses `rust-version` declared in each crate's Cargo.toml.
+      - run: cargo hack check --workspace --rust-version --locked
+
+  node:
+    name: Frontend & extension
+    needs: detect
+    if: needs.detect.outputs.node == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r --if-present lint
+      - run: pnpm -r --if-present typecheck
+      - run: pnpm -r --if-present test
+      - run: pnpm -r --if-present build
+
+  desktop-build:
+    name: Desktop build (${{ matrix.os }})
+    needs: [detect, rust-lint, node]
+    if: needs.detect.outputs.desktop == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux deps (Tauri)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: desktop-${{ matrix.os }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Debug build without bundling: verifies the app compiles on every OS.
+      - run: pnpm --filter desktop tauri build --debug --no-bundle
+
+  # Single required status check for branch protection.
+  ci-success:
+    name: CI success
+    if: always()
+    needs: [typos, rust-lint, rust-test, rust-msrv, node, desktop-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check job results
+        run: |
+          results='${{ toJSON(needs.*.result) }}'
+          echo "$results"
+          if echo "$results" | grep -Eq '"(failure|cancelled)"'; then
+            echo "One or more jobs failed."; exit 1
+          fi
