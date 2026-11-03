@@ -1,0 +1,7 @@
+[files]
+extend-exclude = ["LICENSE-*", "*.lock", "pnpm-lock.yaml"]
+
+[default.extend-words]
+# Project name and Khmer transliterations
+loeun = "loeun"
+Loeun = "Loeun"

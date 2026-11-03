@@ -1,0 +1,64 @@
+name: Bug report
+description: Something isn't working as expected
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please search [existing issues](../issues) first.
+        **Security issues:** do not file here — see SECURITY.md.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options: [Desktop app, Download engine, Browser extension, CLI, Daemon / API, Installer / updater, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: If possible, include a public URL that reproduces the problem.
+      placeholder: |
+        1. Add download https://...
+        2. Pause at ~40%
+        3. Resume → ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Loeun version
+      placeholder: "0.1.0 (Settings → About)"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      multiple: true
+      options: [Windows, macOS (Apple Silicon), macOS (Intel), Linux]
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version / distro
+      placeholder: "Windows 11 24H2, macOS 15.1, Ubuntu 24.04"
+  - type: input
+    id: browser
+    attributes:
+      label: Browser + extension version (if relevant)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Settings → About → Open logs folder. Please remove cookies/tokens.
+      render: text

@@ -1,0 +1,45 @@
+# Rust
+/target/
+**/target/
+*.pdb
+
+# Node
+node_modules/
+.pnpm-store/
+dist/
+dist-ssr/
+*.tsbuildinfo
+.vite/
+coverage/
+
+# Tauri
+apps/desktop/src-tauri/gen/schemas/
+apps/desktop/src-tauri/target/
+
+# Extension builds
+extension/dist/
+*.zip
+*.xpi
+*.crx
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+
+# Loeun runtime/test data
+*.loeun-part
+/tests/tmp/
+/bench/results/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp

@@ -1,0 +1,90 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "**/Cargo.toml"
+      - "Cargo.lock"
+      - "deny.toml"
+      - "**/package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/security.yml"
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.check.outputs.rust }}
+      node: ${{ steps.check.outputs.node }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          echo "rust=$([ -f Cargo.lock ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "node=$([ -f pnpm-lock.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  cargo-deny:
+    name: cargo-deny (${{ matrix.check }})
+    needs: detect
+    if: needs.detect.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [advisories, "bans licenses sources"]
+    # New advisories shouldn't block unrelated PRs.
+    continue-on-error: ${{ matrix.check == 'advisories' && github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check ${{ matrix.check }}
+
+  pnpm-audit:
+    name: pnpm audit
+    needs: detect
+    if: needs.detect.outputs.node == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm audit --prod --audit-level high
+
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    needs: detect
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, javascript-typescript, rust]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skip languages without source yet
+        id: gate
+        run: |
+          run=true
+          [[ "${{ matrix.language }}" == "rust" && "${{ needs.detect.outputs.rust }}" != "true" ]] && run=false
+          [[ "${{ matrix.language }}" == "javascript-typescript" && "${{ needs.detect.outputs.node }}" != "true" ]] && run=false
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+      - if: steps.gate.outputs.run == 'true'
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+      - if: steps.gate.outputs.run == 'true'
+        uses: github/codeql-action/analyze@v3
