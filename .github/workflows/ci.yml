@@ -102,13 +102,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential
-      - uses: taiki-e/install-action@v2
+      - name: Read MSRV from Cargo.toml
+        id: msrv
+        run: echo "version=$(grep -m1 '^rust-version' Cargo.toml | cut -d '"' -f2)" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
         with:
-          tool: cargo-hack
-      - uses: dtolnay/rust-toolchain@stable
+          toolchain: ${{ steps.msrv.outputs.version }}
       - uses: Swatinem/rust-cache@v2
-      # Uses `rust-version` declared in each crate's Cargo.toml.
-      - run: cargo hack check --workspace --rust-version --locked
+        with:
+          key: msrv
+      # `+toolchain` overrides rust-toolchain.toml, so this really builds with the MSRV.
+      - run: cargo +${{ steps.msrv.outputs.version }} check --workspace --all-targets --locked
 
   node:
     name: Frontend & extension

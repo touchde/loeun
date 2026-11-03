@@ -1,0 +1,18 @@
+[package]
+name = "loeun-core"
+description = "Download engine for Loeun: segmented, resumable, multi-connection downloads."
+readme = "README.md"
+keywords = ["download", "downloader", "http", "accelerator", "resume"]
+categories = ["network-programming", "asynchronous"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true
