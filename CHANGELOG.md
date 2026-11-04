@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 ### Added
+- `loeun` CLI binary (`loeun-cli` crate) with `--version` and a placeholder `get` command.
 - Cargo workspace with the `loeun-core` library crate (edition 2024, MSRV 1.96), shared lints and release profile.
 - Project documentation: PRD, architecture, engine design, browser integration, roadmap, ADRs.
 - Repository governance files and GitHub Actions workflows.
