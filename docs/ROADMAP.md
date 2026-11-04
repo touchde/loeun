@@ -18,7 +18,7 @@ Task details: [BACKLOG.md § M0](BACKLOG.md#m0--foundation).
 - [x] Browser extension skeleton (M0-05)
 - [x] Native messaging host stub (M0-06)
 - [x] Repo scripts: render-assets, bump-version (M0-07)
-- [ ] GitHub setup: labels, milestones, branch protection, issues (M0-08)
+- [x] GitHub setup: labels, milestones, branch protection, issues (M0-08)
 
 ## M1 — Core Engine + CLI (v0.1.0)
 
