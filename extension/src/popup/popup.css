@@ -1,0 +1,50 @@
+/* Brand tokens from docs/BRAND.md. */
+:root {
+  --ember-600: #ff4d2e;
+  --ink-900: #0f1013;
+  --ink-800: #17181c;
+  --paper-50: #f1f0ec;
+  --muted: #6a6c75;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  width: 280px;
+  padding: 16px;
+  font:
+    14px / 1.4 system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  background: var(--paper-50);
+  color: var(--ink-800);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: var(--ink-900);
+    color: var(--paper-50);
+  }
+}
+
+.popup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 16px;
+}
+
+p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.note {
+  margin-top: 12px;
+  font-size: 12px;
+}

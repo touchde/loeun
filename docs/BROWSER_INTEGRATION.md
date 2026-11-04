@@ -68,7 +68,7 @@ The desktop installer and the app's first run register the host manifest:
 }
 ```
 
-Firefox uses `allowed_extensions: ["loeun@loeun.dev"]`. Paths per OS and browser are listed in [ARCHITECTURE.md §8](ARCHITECTURE.md#8-cross-platform-notes). Settings include a "Repair browser integration" button that rewrites them.
+Firefox uses `allowed_extensions: ["loeun@touchde.github.io"]`. Paths per OS and browser are listed in [ARCHITECTURE.md §8](ARCHITECTURE.md#8-cross-platform-notes). Settings include a "Repair browser integration" button that rewrites them.
 
 ## 6. Permissions (justification for store review)
 

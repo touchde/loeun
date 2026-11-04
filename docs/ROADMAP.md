@@ -15,7 +15,7 @@ Task details: [BACKLOG.md § M0](BACKLOG.md#m0--foundation).
 - [x] `loeun` CLI stub (M0-02)
 - [x] pnpm workspace + Biome (M0-03)
 - [x] Tauri 2 + React app shell builds on all three OSes in CI (M0-04)
-- [ ] Browser extension skeleton (M0-05)
+- [x] Browser extension skeleton (M0-05)
 - [x] Native messaging host stub (M0-06)
 - [ ] Repo scripts: render-assets, bump-version (M0-07)
 - [ ] GitHub setup: labels, milestones, branch protection, issues (M0-08)
