@@ -36,6 +36,16 @@ pnpm lint && cargo clippy --all-targets -- -D warnings
 4. Open a PR. **The PR title must follow [Conventional Commits](https://www.conventionalcommits.org)**, e.g. `feat(core): dynamic segment splitting`. PRs are squash-merged using the title.
 5. Fill in the PR template. Link issues with `Closes #123`.
 
+## Labels and milestones
+
+- **Type:** `bug`, `enhancement`, `documentation`
+- **Area:** `area:core`, `area:cli`, `area:desktop`, `area:ext`, `area:host`, `area:ci`, `area:docs`
+- **Size:** `size:S` (up to half a day), `size:M` (1–2 days), `size:L` (3–5 days)
+- **Status:** `needs-triage`, `blocked`, `good first issue`, `help wanted`
+- **CI:** `ci:macos` also runs the macOS jobs on a PR
+
+Each backlog task has an issue titled with its ID (e.g. `M1-07: Segment planner`) in the matching milestone (M0–M5). Link your PR with `Closes #<issue>`.
+
 ## Coding guidelines
 - **Rust:** `rustfmt` defaults; no `unwrap()`/`expect()` in library code outside tests; public items documented; errors via `thiserror`.
 - **TypeScript:** `strict` mode, Biome for lint and format, no `any` without justification.
