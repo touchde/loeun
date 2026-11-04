@@ -80,4 +80,4 @@ chrome --headless=new --force-device-scale-factor=1 --default-background-color=0
   --window-size=1024,1024 --screenshot=icon-1024.png wrapper.html
 ```
 
-A `scripts/render-assets` script will automate this in M0.
+Run `pnpm render-assets` to regenerate every PNG and `favicon.ico` from the sources (`scripts/render-assets.mjs`). It finds Chrome/Chromium automatically; set `CHROME=/path/to/chrome` otherwise. Output is deterministic, so an unchanged source produces no git diff.

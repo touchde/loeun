@@ -12,7 +12,7 @@ Types: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, `chore`
 
 ## Cutting a release
 1. Make sure `main` is green.
-2. Bump versions: `cargo set-version X.Y.Z` (cargo-edit) and update `package.json` / `tauri.conf.json` (a script `scripts/bump-version` will be added in M0).
+2. Bump versions: `pnpm bump-version X.Y.Z` (add `--dry-run` to preview). It updates the workspace version in `Cargo.toml` (every crate inherits it, and `tauri.conf.json` reads the app version from Cargo), internal crate dependencies, `Cargo.lock` and `apps/desktop/package.json`.
 3. Commit `chore(release): vX.Y.Z`, then tag `vX.Y.Z` and push the tag.
 4. `.github/workflows/release.yml`:
    - builds the desktop app for macOS (arm64, x64), Windows (x64, arm64) and Linux (x64, arm64)
