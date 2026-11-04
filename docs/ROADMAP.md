@@ -17,7 +17,7 @@ Task details: [BACKLOG.md § M0](BACKLOG.md#m0--foundation).
 - [x] Tauri 2 + React app shell builds on all three OSes in CI (M0-04)
 - [x] Browser extension skeleton (M0-05)
 - [ ] Native messaging host stub (M0-06)
-- [ ] Repo scripts: render-assets, bump-version (M0-07)
+- [x] Repo scripts: render-assets, bump-version (M0-07)
 - [ ] GitHub setup: labels, milestones, branch protection, issues (M0-08)
 
 ## M1 — Core Engine + CLI (v0.1.0)

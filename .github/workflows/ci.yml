@@ -129,7 +129,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint # Biome over the whole repo (root script)
       - run: pnpm -r --if-present typecheck
-      - run: pnpm -r --if-present test
+      - run: pnpm test # repo script tests + every package's tests
       - run: pnpm -r --if-present build
 
   desktop-build:

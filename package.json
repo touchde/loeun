@@ -12,8 +12,10 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
-    "build": "pnpm -r --if-present build"
+    "test": "node --test \"scripts/**/*.test.mjs\" && pnpm -r --if-present test",
+    "build": "pnpm -r --if-present build",
+    "bump-version": "node scripts/bump-version.mjs",
+    "render-assets": "node scripts/render-assets.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.4"
