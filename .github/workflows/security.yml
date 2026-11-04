@@ -24,12 +24,15 @@ jobs:
     outputs:
       rust: ${{ steps.check.outputs.rust }}
       node: ${{ steps.check.outputs.node }}
+      js: ${{ steps.check.outputs.js }}
     steps:
       - uses: actions/checkout@v4
       - id: check
         run: |
           echo "rust=$([ -f Cargo.lock ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           echo "node=$([ -f pnpm-lock.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          # CodeQL fails if a language has no source files, so check for real JS/TS code.
+          echo "js=$(git ls-files '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs' | grep -q . && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
   cargo-deny:
     name: cargo-deny (${{ matrix.check }})
@@ -79,7 +82,7 @@ jobs:
         run: |
           run=true
           [[ "${{ matrix.language }}" == "rust" && "${{ needs.detect.outputs.rust }}" != "true" ]] && run=false
-          [[ "${{ matrix.language }}" == "javascript-typescript" && "${{ needs.detect.outputs.node }}" != "true" ]] && run=false
+          [[ "${{ matrix.language }}" == "javascript-typescript" && "${{ needs.detect.outputs.js }}" != "true" ]] && run=false
           echo "run=$run" >> "$GITHUB_OUTPUT"
       - if: steps.gate.outputs.run == 'true'
         uses: github/codeql-action/init@v3

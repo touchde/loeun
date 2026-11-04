@@ -4,13 +4,21 @@ Requirement IDs (e.g. `ENG-03`) refer to [PRD.md](PRD.md). The task-level breakd
 
 ## M0 — Foundation (done when CI is green)
 
-- [ ] Repository, license, governance docs (README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
-- [ ] PRD, architecture, engine and browser-integration design docs, ADRs
-- [ ] GitHub Actions: CI, security audit, PR title lint, release pipeline
-- [ ] Issue/PR templates, labels, Dependabot
-- [ ] Cargo workspace + pnpm workspace scaffold
-- [ ] `loeun-core` empty crate with CI passing on Windows/macOS/Linux
-- [ ] Tauri 2 + React app shell builds on all three OSes in CI
+Task details: [BACKLOG.md § M0](BACKLOG.md#m0--foundation).
+
+- [x] Repository, license, governance docs (README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY)
+- [x] PRD, architecture, engine and browser-integration design docs, ADRs, backlog
+- [x] GitHub Actions: CI, security audit, PR title lint, release pipeline
+- [x] Issue/PR templates, Dependabot
+- [x] Brand identity and assets
+- [x] Cargo workspace + `loeun-core` stub, CI green on Windows/macOS/Linux (M0-01)
+- [ ] `loeun` CLI stub (M0-02)
+- [x] pnpm workspace + Biome (M0-03)
+- [ ] Tauri 2 + React app shell builds on all three OSes in CI (M0-04)
+- [ ] Browser extension skeleton (M0-05)
+- [ ] Native messaging host stub (M0-06)
+- [ ] Repo scripts: render-assets, bump-version (M0-07)
+- [ ] GitHub setup: labels, milestones, branch protection, issues (M0-08)
 
 ## M1 — Core Engine + CLI (v0.1.0)
 

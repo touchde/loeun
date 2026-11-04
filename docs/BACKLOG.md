@@ -14,8 +14,9 @@ Requirement IDs (`ENG-03`, `UI-02`, ...) refer to [PRD.md](PRD.md). Milestones r
 **Definition of Done (every task)**
 - Code, tests and docs in one PR; CI green on Windows, macOS and Linux.
 - `cargo clippy -D warnings` and `pnpm lint` clean; no `unwrap()` in library code.
-- Public Rust items documented; user-facing behaviour noted in `CHANGELOG.md` under *Unreleased*.
+- Public Rust items documented. The changelog is generated from PR titles by git-cliff at release time, so write a clear Conventional Commit PR title; don't edit `CHANGELOG.md` by hand.
 - Design docs updated if behaviour differs from them.
+- The task's line in [ROADMAP.md](ROADMAP.md) is ticked in the same PR, so progress on `main` is always accurate.
 
 **Order of work:** tasks are listed in the recommended order. Tasks without a dependency on each other can run in parallel.
 

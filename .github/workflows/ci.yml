@@ -127,7 +127,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --if-present lint
+      - run: pnpm lint # Biome over the whole repo (root script)
       - run: pnpm -r --if-present typecheck
       - run: pnpm -r --if-present test
       - run: pnpm -r --if-present build
