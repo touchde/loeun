@@ -14,7 +14,7 @@ Task details: [BACKLOG.md § M0](BACKLOG.md#m0--foundation).
 - [x] Cargo workspace + `loeun-core` stub, CI green on Windows/macOS/Linux (M0-01)
 - [ ] `loeun` CLI stub (M0-02)
 - [x] pnpm workspace + Biome (M0-03)
-- [ ] Tauri 2 + React app shell builds on all three OSes in CI (M0-04)
+- [x] Tauri 2 + React app shell builds on all three OSes in CI (M0-04)
 - [ ] Browser extension skeleton (M0-05)
 - [ ] Native messaging host stub (M0-06)
 - [ ] Repo scripts: render-assets, bump-version (M0-07)

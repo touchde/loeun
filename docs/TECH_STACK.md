@@ -25,7 +25,7 @@ The reasoning for the major choices is recorded in [`adr/`](adr/).
 | Concern | Choice |
 |---|---|
 | Shell | Tauri 2 (+ plugins: tray, notification, updater, single-instance, deep-link, autostart, clipboard, dialog, opener) |
-| UI framework | React 18 + TypeScript (strict) |
+| UI framework | React 19 + TypeScript (strict) |
 | Bundler | Vite |
 | Styling | Tailwind CSS + Radix UI primitives |
 | State | Zustand |

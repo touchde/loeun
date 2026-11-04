@@ -18,7 +18,7 @@ We need a cross-platform desktop UI with a small installer (< 15 MB), low idle m
 UI framework within Tauri: **React** (largest ecosystem, most contributors) vs Svelte (smaller and faster). The UI is a list, dialogs and a chart, so either works well.
 
 ## Decision
-**Tauri 2** with **React 18 + TypeScript + Vite**, Tailwind CSS and Radix UI primitives.
+**Tauri 2** with **React 19 + TypeScript + Vite**, Tailwind CSS and Radix UI primitives.
 
 ## Consequences
 
