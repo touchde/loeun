@@ -35,6 +35,7 @@ pnpm lint && cargo clippy --all-targets -- -D warnings
 3. Make sure these pass locally: `cargo fmt --all`, `cargo clippy --all-targets -- -D warnings`, `cargo nextest run`, `pnpm lint`, `pnpm test`.
 4. Open a PR. **The PR title must follow [Conventional Commits](https://www.conventionalcommits.org)**, e.g. `feat(core): dynamic segment splitting`. PRs are squash-merged using the title.
 5. Fill in the PR template. Link issues with `Closes #123`.
+6. CI on PRs runs on Linux and Windows. macOS runs on `main` and nightly; add the `ci:macos` label to a PR that needs macOS testing before merge.
 
 ## Coding guidelines
 - **Rust:** `rustfmt` defaults; no `unwrap()`/`expect()` in library code outside tests; public items documented; errors via `thiserror`.

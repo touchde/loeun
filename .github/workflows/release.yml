@@ -154,5 +154,5 @@ jobs:
         run: |
           mkdir assets && cd assets
           gh release download "$TAG" -R "${{ github.repository }}"
-          sha256sum * > SHA256SUMS
+          sha256sum -- * > SHA256SUMS
           gh release upload "$TAG" SHA256SUMS -R "${{ github.repository }}" --clobber
