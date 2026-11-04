@@ -1,0 +1,21 @@
+{
+  "name": "loeun-monorepo",
+  "private": true,
+  "description": "Loeun download manager: JavaScript/TypeScript workspace (desktop UI, browser extension).",
+  "license": "MIT OR Apache-2.0",
+  "repository": "github:touchde/loeun",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "build": "pnpm -r --if-present build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4"
+  }
+}
