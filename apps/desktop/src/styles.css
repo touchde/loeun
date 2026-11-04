@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* Brand tokens from docs/BRAND.md. Components use these via Tailwind
+   utilities (bg-ink-900, text-ember-600, ...) instead of raw hex values. */
+@theme {
+  --color-ember-400: #ffb020;
+  --color-ember-600: #ff4d2e;
+  --color-ink-900: #0f1013;
+  --color-ink-800: #17181c;
+  --color-paper-50: #f1f0ec;
+  --color-off-500: #5c5e66;
+
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Khmer", "Khmer Sangam MN",
+    sans-serif;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  @apply m-0 bg-paper-50 text-ink-800 antialiased dark:bg-ink-900 dark:text-paper-50;
+}

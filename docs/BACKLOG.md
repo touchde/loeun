@@ -52,7 +52,7 @@ Goal: every part of the monorepo exists, builds and is tested in CI, even if it 
 - *Done when:* `pnpm install && pnpm lint` passes; CI node job runs green.
 
 **M0-04 Tauri desktop shell**
-- `apps/desktop` from `create-tauri-app` (React + TS + Vite), product name `Loeun`, identifier `dev.loeun.app`.
+- `apps/desktop` (Tauri 2, React + TS + Vite), product name `Loeun`, identifier `io.github.touchde.loeun` (we do not own a domain; reverse-DNS of the GitHub Pages host keeps the identifier stable).
 - Depends on `loeun-core` and shows its version in the window.
 - Icons generated with `tauri icon` from `assets/app-icon/` (see BRAND.md); Tailwind CSS set up with brand tokens.
 - Strict CSP and minimal capabilities file.

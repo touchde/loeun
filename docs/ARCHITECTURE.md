@@ -99,7 +99,7 @@ engine.resume(id).await?;
 ### 4.2 Desktop app (`apps/desktop`)
 
 - **Rust side:** owns the `Engine`. It exposes Tauri commands (`add_download`, `pause`, ...) and forwards engine events to the webview as Tauri events. It also handles the tray, notifications, the updater, the deep-link handler, single-instance enforcement and the IPC server for the native host.
-- **UI side:** React 18 + TypeScript + Vite. State in Zustand, styles in Tailwind CSS. Typed bindings are generated from Rust with `tauri-specta` so the commands and types stay in sync.
+- **UI side:** React 19 + TypeScript + Vite. State in Zustand, styles in Tailwind CSS. Typed bindings are generated from Rust with `tauri-specta` so the commands and types stay in sync.
 
 ### 4.3 CLI (`loeun`)
 
